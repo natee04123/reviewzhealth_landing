@@ -694,7 +694,6 @@ footer {
 </footer>
 
 <script>
-// Signup handler - stores emails (replace with your email service)
 async function signup(source) {
   const input = document.getElementById(source === 'hero' ? 'hero-email' : 'cta-email');
   const email = input.value.trim();
@@ -710,7 +709,6 @@ async function signup(source) {
   btn.textContent = 'Joining...';
   btn.disabled = true;
 
- // Send to Google Sheet
   try {
     await fetch('https://script.google.com/macros/s/AKfycbwJUyU8L0C7yyEbVB4-2xSUREvMKzoY3OMGXuI8PPdY4n8vBEdeRUWuiF-Z6csaNCvOHg/exec', {
       method: 'POST',
@@ -722,17 +720,31 @@ async function signup(source) {
     console.log('Signup error:', e);
   }
 
-  // Show success
-  setTimeout(() => {
-
-  // Show success
-  setTimeout(() => {
-    const formEl = document.getElementById(source === 'hero' ? 'hero-form' : 'cta-form');
-    const successEl = document.getElementById(source === 'hero' ? 'hero-success' : 'cta-success');
-    formEl.style.display = 'none';
-    successEl.style.display = 'block';
-  }, 600);
+  const formEl = document.getElementById(source === 'hero' ? 'hero-form' : 'cta-form');
+  const successEl = document.getElementById(source === 'hero' ? 'hero-success' : 'cta-success');
+  formEl.style.display = 'none';
+  successEl.style.display = 'block';
 }
+
+document.querySelectorAll('input[type=email]').forEach(input => {
+  input.addEventListener('keydown', e => {
+    if (e.key === 'Enter') {
+      signup(input.id === 'hero-email' ? 'hero' : 'cta');
+    }
+  });
+});
+
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.classList.add('visible');
+      observer.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.1 });
+
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+</script>
 
 // Allow Enter key on email inputs
 document.querySelectorAll('input[type=email]').forEach(input => {
